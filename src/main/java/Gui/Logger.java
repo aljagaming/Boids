@@ -21,11 +21,18 @@ public class Logger {
     }
 
     public synchronized void log(String message) {//gotta be synchronized cos what if different threads want to write @ same time
-
-
-            textArea.append(" "+message + "\n");
-            textArea.setCaretPosition(textArea.getDocument().getLength());
-
+        int maxLines=150;
+        int numLines=textArea.getLineCount();
+        if (numLines>maxLines){
+            try {
+                int endOffset = textArea.getLineEndOffset(numLines - maxLines - 1);
+                textArea.replaceRange("", 0, endOffset);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        textArea.append(" "+message + "\n");
+        textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 
 
