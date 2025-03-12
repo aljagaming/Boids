@@ -32,8 +32,6 @@ public class SideMenu extends PanelCreator {
             public void actionPerformed(ActionEvent e) {
 
                 variables.log("Restarting...");
-                variables.setNumOfBoids(0);
-
                 variables.setRestarting(true);
             }
         });
@@ -78,7 +76,7 @@ public class SideMenu extends PanelCreator {
                 variables.setNumOfBoids(variables.getNumOfBoids()+1);
                 counterTextField.setText(Integer.toString(variables.getNumOfBoids()));
 
-                Logger.getInstance().log("Number of Boids incremented: "+variables.getNumOfBoids());
+                Logger.getInstance().log("#Boids: "+variables.getNumOfBoids());
             }
         });
 
@@ -90,7 +88,7 @@ public class SideMenu extends PanelCreator {
                     variables.setNumOfBoids(variables.getNumOfBoids() - 1);
                     counterTextField.setText(Integer.toString(variables.getNumOfBoids()));
 
-                    Logger.getInstance().log("Number of Boids decremented: "+variables.getNumOfBoids());
+                    Logger.getInstance().log("#Boids: "+variables.getNumOfBoids());
                 }
             }
         });
@@ -102,8 +100,7 @@ public class SideMenu extends PanelCreator {
                 String text = counterTextField.getText();
                 try {
                     variables.setNumOfBoids(Integer.parseInt(text));
-                    System.out.println("New number of boids is"+variables.getNumOfBoids());
-                    Logger.getInstance().log("Number of Boids: "+variables.getNumOfBoids());
+                    Logger.getInstance().log("#Boids: "+variables.getNumOfBoids());
 
                 }catch (NumberFormatException ex) {
 
@@ -130,16 +127,16 @@ public class SideMenu extends PanelCreator {
 
                 switch (selectedOption) {
                     case "Sequential execution":
-                        Logger.getInstance().log("Now executing in sequential..........");
+                        Logger.getInstance().log("sequentialExe...");
                         newStyle = ExecutionStyle.SEQUENTIAL;
                         break;
                     case "Parallel execution":
-                        Logger.getInstance().log("Now executing in parallel..........");
+                        Logger.getInstance().log("ParallelExe...");
                         newStyle = ExecutionStyle.PARALLEL;
                         break;
                     case "Distributed execution":
                         newStyle = ExecutionStyle.DISTRIBUTED;
-                        Logger.getInstance().log("Now executing in distributed..........");
+                        Logger.getInstance().log("DistributedExe...");
                         break;
                 }
 

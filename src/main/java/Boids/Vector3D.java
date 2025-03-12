@@ -114,35 +114,6 @@ public class Vector3D {
         }
         return value;
     }
-
-    /*
-    public void normalizeBySpeed(float speed){
-        // makes sure that each of the components of Vector is in the range 0-1
-        // this way we can multiply (scale) some other vector with this
-        // we doo this by deviding each component of the vector by the vectors length
-
-
-        if (x > 0) {
-            x=Math.min(1,x/speed);
-        }else if(x<0){
-            x=Math.max(-1,x/speed);
-        }
-
-        if (y > 0) {
-            y=Math.min(1,y/speed);
-        }else if(y<0){
-            y=Math.max(-1,y/speed);
-        }
-
-        if (z > 0) {
-            z=Math.min(1,z/speed);
-        }else if(z<0){
-            z=Math.max(-1,z/speed);
-        }
-    }
-
-     */
-
     public float distance (Vector3D positionOfOtherBoid){
 
         float distanceX=this.x-positionOfOtherBoid.getX();
@@ -152,6 +123,9 @@ public class Vector3D {
         return (float) Math.sqrt(distanceX*distanceX+distanceY*distanceY+distanceZ*distanceZ);
     }
 
+    public Vector3D copy(){
+        return new Vector3D(this.getX(),this.getY(), this.getZ());
+    }
 
 
 

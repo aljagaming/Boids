@@ -15,21 +15,24 @@ public class Variables {
 
     private ArrayList <Boid> arrayOfBoids=new ArrayList<>(0);
 
-    private final int MAX_BOID_SIZE=40;
-    private final int MIN_BOID_SIZE=15;
+    private final int MAX_BOID_SIZE=20;
+    private final int MIN_BOID_SIZE=10;
+
     private int numOfBoids=20;
     private Dimension boidFieldSize;
 
     private ExecutionStyle executionStyle;
 
+
+    private Gui myGui=new Gui(this);
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     private ExecutionInterface currentExe=new SequentialExe(this);
 
     //----------------------------------------------------------------------------------------
-    private CyclicBarrier barrier=new CyclicBarrier(2);
-
+    //
+    private CyclicBarrier barrier=new CyclicBarrier(2);//needed because while loop tries to calculate stuff before it is drawn
     private boolean Restarting=false;
-
-
 
     //----------------------------------------------------------------------------------------
     //Mandatory:
@@ -38,14 +41,10 @@ public class Variables {
     private int alignment=50;
     //----------------------------------------------------------------------------------------
     //optional:
-    private int visualRange=50;
+    private int visualRange=100;
     private int animationSpeed=50;
     private boolean tracePaths=false;
     //----------------------------------------------------------------------------------------
-
-
-    private Gui myGui=new Gui(this);
-    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
     public int getNumOfBoids() {

@@ -4,6 +4,7 @@ import Boids.Boid;
 import Boids.Vector3D;
 import Executive.ExecutionInterface;
 import Executive.Variables;
+import Functions.Functions;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,11 +15,13 @@ public class SequentialExe implements ExecutionInterface {
     Variables variables;
     CountDownLatch latch =new CountDownLatch(2);
 
-    float visualRange;
-    float cohesionFactor;
-    float separationFactor;
-    float alignmentFactor;
-    Random r=new Random();
+    int visualRange;
+    int cohesionFactor;
+    int separationFactor;
+    int alignmentFactor;
+
+    boolean secondLap=false;
+    int temp = 0;
 
     Vector3D finalAcceleration =new Vector3D(0,0,0);
 
@@ -33,9 +36,9 @@ public class SequentialExe implements ExecutionInterface {
 
         while (true){
 
-            cohesionFactor= (float) variables.getCoherence()/100;
-            separationFactor= (float) variables.getSeparation()/100;
-            alignmentFactor=(float) variables.getAlignment()/100;
+            cohesionFactor=variables.getCoherence();
+            separationFactor=variables.getSeparation();
+            alignmentFactor=variables.getAlignment();
             visualRange= variables.getVisualRange();
 
 
@@ -44,29 +47,21 @@ public class SequentialExe implements ExecutionInterface {
             Vector3D cummulativeAceleration=new Vector3D(0,0,0);
 
             //1. check if #num of boids changed
-            updateNumOfBoids(r);
+            updateNumOfBoids();
 
             for (Boid B:variables.getArrayOfBoids()) {
 
 
                 if (visualRange!=0){
 
-
-                    finalAcceleration.add(alignment(B,variables.getArrayOfBoids()));
-                    finalAcceleration.add(cohesion(B,variables.getArrayOfBoids()));
-                    finalAcceleration.add(separation(B,variables.getArrayOfBoids()));
-
-
-                   finalAcceleration.limitVector(-B.getMAX_FORCE(),B.getMAX_FORCE());
+                    finalAcceleration=Functions.theAllMightyFunction(B,variables.getArrayOfBoids(),visualRange,cohesionFactor,separationFactor,alignmentFactor);
 
                     B.addAcceleration(finalAcceleration);
                     finalAcceleration.multiply(0);//set back to zero
 
                 };
 
-
-
-                border(B);
+                B.addAcceleration(border(B));
 
                 B.move(variables.getAnimationSpeed()); //normalize speed - 0-1
 
@@ -105,218 +100,150 @@ public class SequentialExe implements ExecutionInterface {
 
     //------------------------------------------------------------------------------------------------------
 
-    private void updateNumOfBoids(Random r){
+    //Maybe make a class for this latter
 
 
-
-        if (variables.getNumOfBoids()>variables.getArrayOfBoids().size()){
-            while (variables.getNumOfBoids()!=variables.getArrayOfBoids().size()) {
-
-                int border=10;
-
-                //add a new boid
-                //KEEP IN MIND THIS GENERATES [0-99] INCLUSIVE
-                float possibleX=r.nextInt((variables.getBoidFieldSize().width) - border);
-                float possibleY=r.nextInt((variables.getBoidFieldSize().height) - border);
-
-                if (possibleX<variables.getMAX_BOID_SIZE()){
-                    possibleX=border;
-                }
-
-                if (possibleY<variables.getMAX_BOID_SIZE()){
-                    possibleY=border;
-                }
-
-
-
-
-                variables.getArrayOfBoids().add(new Boid(new Vector3D(possibleX,possibleY,r.nextFloat(1000))));
-            }
-        } else if (variables.getNumOfBoids()<variables.getArrayOfBoids().size()) {
-            while (variables.getNumOfBoids()!=variables.getArrayOfBoids().size()) {
-                //add a new boid
-                //KEEP IN MIND THIS GENERATES [0-99] INCLUSIVE
-                //variables.setNumOfBoids(variables.getNumOfBoids()-1);
-                variables.getArrayOfBoids().removeLast();
-            }
+    private void updateNumOfBoids(){
+        Random r=new Random();
+        int numOfBoids= variables.getNumOfBoids();
+        //restarting logic
+        if (secondLap){
+            secondLap=false;
+            numOfBoids=temp;
         }
 
-
-        if (variables.isRestarting()){
-            variables.setNumOfBoids(20);
+        if (variables.isRestarting() && !secondLap) {
             variables.setRestarting(false);
-        }
-
-        //---------------------------------------------------------------------------------------------------------
-    }
-
-
-
-
-    public void border(Boid b){
-        Vector3D position=b.getPosition();
-
-        if (position.getX()<0){
-            position.setX((float) variables.getBoidFieldSize().getWidth());
-
-        }else if(position.getX()>variables.getBoidFieldSize().getWidth()){
-            position.setX(0);
-        }
-        if (position.getY()<0){
-            position.setY((float) variables.getBoidFieldSize().getHeight());
-
-        }else if(position.getY()>variables.getBoidFieldSize().getHeight()){
-            position.setY(0);
+            temp = numOfBoids;
+            numOfBoids = 0;
+            secondLap=true;
         }
 
 
-        if (position.getZ()<0){
-            position.setZ(1000);
+        if (numOfBoids > variables.getArrayOfBoids().size()) {
+                while (numOfBoids!= variables.getArrayOfBoids().size()) {
 
-        }else if(position.getZ()>1000){
-            position.setZ(0);
-        }
+                    int border = 10;
+
+                    //add a new boid
+                    //KEEP IN MIND THIS GENERATES [0-99] INCLUSIVE
+                    float possibleX = r.nextInt((variables.getBoidFieldSize().width) - border);
+                    float possibleY = r.nextInt((variables.getBoidFieldSize().height) - border);
+
+                    if (possibleX < variables.getMAX_BOID_SIZE()) {
+                        possibleX = border;
+                    }
+
+                    if (possibleY < variables.getMAX_BOID_SIZE()) {
+                        possibleY = border;
+                    }
 
 
+                    variables.getArrayOfBoids().add(new Boid(new Vector3D(possibleX, possibleY, 1000)));
+                    //depth here is 1000
 
-
-    }
-
-
-    private Vector3D alignment(Boid parameterBoid, ArrayList<Boid> neighbourhood) {
-
-        Vector3D position=parameterBoid.getPosition();
-        Vector3D currentV=parameterBoid.getVelocity();
-
-        Vector3D avgVelocity=new Vector3D(0,0,0);
-
-        if (alignmentFactor==0){
-            return avgVelocity;
-        }
-
-        int total=0;
-        for (Boid b:neighbourhood) {
-            float distance=position.distance(b.getPosition());
-            if (distance<visualRange/2 && b!=parameterBoid){
-                avgVelocity.add(b.getVelocity());
-                total++;
+                }
+            } else if (numOfBoids < variables.getArrayOfBoids().size()) {
+                while (numOfBoids != variables.getArrayOfBoids().size()) {
+                    //add a new boid
+                    //KEEP IN MIND THIS GENERATES [0-99] INCLUSIVE
+                    //variables.setNumOfBoids(variables.getNumOfBoids()-1);
+                    variables.getArrayOfBoids().removeLast();
+                }
             }
-        }
-
-        if (total > 0) {
-            avgVelocity.divide(total);  // Average velocity of neighbors
-
-            avgVelocity.sub(currentV);  // Adjust for current velocity
-
-            avgVelocity.limitVector(-parameterBoid.getMAX_FORCE()*alignmentFactor,parameterBoid.getMAX_FORCE()*alignmentFactor);
-
-        }
-
-
-        //System.out.println("aligment thingy: "+avgVelocity.getX()+" "+avgVelocity.getY()+" "+avgVelocity.getY());
-
-
-        return avgVelocity;
     }
+    //---------------------------------------------------------------------------------------------------------
 
 
-    private Vector3D cohesion(Boid parameterBoid, ArrayList<Boid> neighbourhood) {
+
+    public Vector3D border(Boid b){
+        Vector3D returnV=new Vector3D(0,0,0);
+        //need to calculate the buffer zone how much it takes for a boid to turns around completely
 
 
-        // max visual range=300 pixels
-        Vector3D currentP=parameterBoid.getPosition();
-        Vector3D currentV=parameterBoid.getVelocity();
+        float xPos=b.getPosition().getX();
+        float yPos=b.getPosition().getY();
+        float zPos=b.getPosition().getZ();
+        float softBound=b.getSPEED()/b.getMAX_FORCE(); //20
 
-        Vector3D avgPosition=new Vector3D(0,0,0);
+        softBound=softBound/2;
+        float turnRadius=b.getMAX_FORCE();
+        float course=b.getCourse();
 
-        if (cohesionFactor==0){
-            return avgPosition;
-        }
 
-        int total=0;
-        for (Boid b:neighbourhood) {
-            if (currentP.distance(b.getPosition()) < visualRange*8 && b != parameterBoid) {
-                avgPosition.add(b.getPosition());
-                total++;
+
+
+
+        //For X
+        if (xPos<softBound){//LEFT WALL
+            if (course < Math.PI) {
+                returnV.setX(+turnRadius);
+            } else {//Math.Pi-2*Math.Pi
+                returnV.setX(-turnRadius);
+            }
+
+        } else if (xPos>(variables.getBoidFieldSize().width-softBound)) {//RIGHT WALL
+            if (course < Math.PI) {//0-Math.PI
+                returnV.setX(-turnRadius);
+            } else {//Math.Pi-2*Math.Pi
+                returnV.setX(+turnRadius);
             }
         }
 
 
-        if (total>0) {
-
-            avgPosition.divide(total);  // Average position of neighbors
-            avgPosition.sub(currentP);  // Direction to average position
-            avgPosition.sub(currentV);  // Adjust for current velocity
-
-            avgPosition.multiply(cohesionFactor);  // Scale by cohesion factor
-            avgPosition.limitVector(-parameterBoid.getMAX_FORCE() * cohesionFactor, +parameterBoid.getMAX_FORCE() * cohesionFactor);
-
-        }
-
-
-
-
-        return avgPosition;
-
-    }
-
-
-
-    private Vector3D separation(Boid parameterBoid, ArrayList<Boid> neighbourhood) {
-
-
-        // max visual range=300 pixels
-
-
-        //immportant to make NOT MAKE A REFERENCE
-        Vector3D currentP = new Vector3D(parameterBoid.getPosition().getX(),parameterBoid.getPosition().getY(),parameterBoid.getPosition().getZ());
-
-        //read only so its fine
-        Vector3D currentV=parameterBoid.getVelocity();
-
-        Vector3D goAwayVector=new Vector3D(0,0,0);
-
-        if (separationFactor==0){
-            return goAwayVector;
-        }
-
-        int total=0;
-        int count=0;
-        for (Boid b:neighbourhood) {
-
-            float distance = currentP.distance(b.getPosition());
-
-            if (distance < visualRange*3 && b != parameterBoid) {
-
-                //from other boids position substract my position
-                Vector3D difference = currentP;
-                difference.sub(b.getPosition());
-
-
-
-                difference.divide(distance);
-                //it is inversly proportional to distance
-
-
-                goAwayVector.add(difference);
-                total++;
+        if (yPos<softBound){//CEILING
+            if (course>Math.PI*3/2 && course<Math.PI/2) {
+                returnV.setY(-turnRadius);
+            } else {//Math.Pi-2*Math.Pi
+                returnV.setY(+turnRadius);
+            }
+        } else if (yPos>variables.getBoidFieldSize().height-softBound) {//FLOOR
+            if (course>Math.PI*3/2 && course<Math.PI/2) {
+                returnV.setY(+turnRadius);
+            } else {//Math.Pi-2*Math.Pi
+                returnV.setY(-turnRadius);
             }
         }
 
 
-        if (total>0) {
+        if (zPos<0+softBound){
+            returnV.setZ(+turnRadius);
 
-            goAwayVector.divide(total);  // Average position of neighbors
-            //goAwayVector.multiply(parameterBoid.getSPEED()*2);
-            goAwayVector.sub(currentV);  // Adjust for current velocity
-            goAwayVector.limitVector((-parameterBoid.getMAX_FORCE())*separationFactor, (parameterBoid.getMAX_FORCE()* separationFactor));
+        }else if(zPos>1000-softBound){
+            returnV.setZ(-turnRadius);
         }
 
 
-        return goAwayVector;
 
+        /*
+
+    if (xPos < 10) {
+        // Gradually turn towards the new direction
+        if (b.getCourse() > Math.PI) {
+            b.setCourse(b.getCourse() - turnRate);  // Turn counter-clockwise
+        } else {
+            b.setCourse(b.getCourse() + turnRate);  // Turn clockwise
+        }
+        b.setxPos(10);
+    } else if (xPos > (variables.getBoidFieldSize().width - 20)) {
+        // Gradually turn towards the new direction
+        if (b.getCourse() < Math.PI) {
+            b.setCourse(b.getCourse() + turnRate);  // Turn clockwise
+        } else {
+            b.setCourse(b.getCourse() - turnRate);  // Turn counter-clockwise
+        }
+        b.setxPos(variables.getBoidFieldSize().width - 20);
+    } else if (yPos < 10) {
+        b.setCourse(b.getCourse() - turnRate);  // Gradually turn upwards
+        b.setyPos(10);
+    } else if (yPos > (variables.getBoidFieldSize().height - 20)) {
+        b.setCourse(b.getCourse() + turnRate);  // Gradually turn downwards
+        b.setyPos(variables.getBoidFieldSize().height - 20);
     }
+}
+         */
 
-
+        return returnV;
+    }
 
 }

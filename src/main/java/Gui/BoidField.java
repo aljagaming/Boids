@@ -31,8 +31,9 @@ public class BoidField extends PanelCreator{
 
 
         //There must be a more elegant way to coppy an array list but leave it like this for now
-
         ArrayList<Boid> copy = new ArrayList<>(variables.getArrayOfBoids());
+
+
 
         copy.sort(new Comparator<Boid>() {
 
@@ -46,24 +47,12 @@ public class BoidField extends PanelCreator{
             }
         });
 
+
         for (Boid b: copy) {
 
             Vector3D position=b.getPosition();
             float course=b.getCourse();
-
-
-            //So how do you map 0-1000 ->>>>>>> 20 - 40
-            // Rand (1000)/50+10 =10 - (40+10)
-            //as of right now there are 30 different sizes starting from MIN_BOID_SIZE=20 to 50
-
-
-
-            float size= position.getZ()/25+variables.getMIN_BOID_SIZE(); //replace 10 with MAX_BOID_SIZE
-
-
-
-            size=Math.max(variables.getMIN_BOID_SIZE(),size);
-            size=Math.min(variables.getMAX_BOID_SIZE(),size);
+            float size= position.getZ()/100+variables.getMIN_BOID_SIZE(); //replace 10 with MAX_BOID_SIZE
 
 
             //in case size goes over bounds
@@ -73,26 +62,28 @@ public class BoidField extends PanelCreator{
             int[] xPoints = new int[3];
             int[] yPoints = new int[3];
 
-            float wingLength = size / 2;
+            float wingLength = size / 2; // means the base is 2 times shorter
             float wingAngle = (float) Math.PI / 6; // 30 degrees for a pointy triangle
 
             float x=position.getX();
             float y=position.getY();
 
+            float centerX = (float) (x - (size / 2) * Math.cos(course));
+            float centerY = (float) (y - (size / 2) * Math.sin(course));
 
 
             // Nose of the boid (forward)
-            xPoints[0] = (int) (x + size * Math.cos(course));
-            yPoints[0] = (int) (y + size * Math.sin(course));
+            xPoints[0] = (int) (centerX + size * Math.cos(course));
+            yPoints[0] = (int) (centerY + size * Math.sin(course));
 
 
             //Left wing
-            xPoints[1] = (int) (x + wingLength * Math.cos(course - wingAngle)); // Left wing x = x + wingLength * cos(course - wingAngle)
-            yPoints[1] = (int) (y + wingLength * Math.sin(course - wingAngle)); // Left wing y = y + wingLength * sin(course - wingAngle)
+            xPoints[1] = (int) (centerX + wingLength * Math.cos(course - wingAngle)); // Left wing x = x + wingLength * cos(course - wingAngle)
+            yPoints[1] = (int) (centerY + wingLength * Math.sin(course - wingAngle)); // Left wing y = y + wingLength * sin(course - wingAngle)
 
             // Right wing (angle = course + wingAngle)
-            xPoints[2] = (int) (x + wingLength * Math.cos(course + wingAngle)); // Right wing x = x + wingLength * cos(course + wingAngle)
-            yPoints[2] = (int) (y + wingLength * Math.sin(course + wingAngle));
+            xPoints[2] = (int) (centerX + wingLength * Math.cos(course + wingAngle)); // Right wing x = x + wingLength * cos(course + wingAngle)
+            yPoints[2] = (int) (centerY + wingLength * Math.sin(course + wingAngle));
 
 
             g.setColor(Color.WHITE);
@@ -103,16 +94,33 @@ public class BoidField extends PanelCreator{
             // also how do you handle
             //but is expensive so maybe dont use it - no one cares bout GUI :(
 
+
+
+
             g.setColor(Color.BLACK);
             g.drawPolygon(xPoints, yPoints, 3);
 
+            //g.setColor(Color.BLACK); // Set dot color
+            //g.fillOval((int) (x - 4 / 2), (int) (y - 4 / 2), 4, 4);
+
+
+
+
+            //g.setColor(Color.YELLOW);
+            //g.drawOval((int)(x-variables.getVisualRange()/2),(int)(y-variables.getVisualRange()/2),variables.getVisualRange(), variables.getVisualRange());
 
         }
 
+
+
+
+
         g.setColor(Color.BLACK);
-        g.drawRect(0+10,0+10,variables.getBoidFieldSize().width-20,variables.getBoidFieldSize().height-20);
+        int soft=500;
 
+        g.drawRect(soft/4,soft/4,variables.getBoidFieldSize().width-2*soft/4,variables.getBoidFieldSize().height-2*soft/4);
 
+        g.drawRect(soft/2,soft/2,variables.getBoidFieldSize().width-2*soft/2,variables.getBoidFieldSize().height-2*soft/2);
 
 
 

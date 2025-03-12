@@ -20,7 +20,7 @@ public class Logger {
         scrollPane = new JScrollPane(textArea);
     }
 
-    public synchronized void log(String message) {//gotta be synchronized cos what if different threads want to write @ same time
+    public synchronized void log(String message) {
         int maxLines=150;
         int numLines=textArea.getLineCount();
         if (numLines>maxLines){

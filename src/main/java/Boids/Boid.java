@@ -85,7 +85,6 @@ public class Boid {
 
         //System.out.println("Total velocity "+thingy);
 
-
         course= (float) Math.atan2(velocity.getY(),velocity.getX());
         position.add(velocity);
         acceleration.multiply(0);
@@ -116,11 +115,22 @@ public class Boid {
 
 
     public Vector3D getPosition() {
+        return new Vector3D(position.getX(), position.getY(), position.getZ());
+    }
+    public void setPosition(float x, float y, float z) {
+        this.position=new Vector3D(x,y,z);
+    }
+
+    public Vector3D changePosition(){
         return position;
     }
 
     public Vector3D getVelocity() {
-        return velocity;
+        return new Vector3D(velocity.getX(), velocity.getY(), velocity.getZ());
+    }
+
+    public void  setVelocity(Vector3D v){
+        this.velocity=v;
     }
 
     public float getCourse() {

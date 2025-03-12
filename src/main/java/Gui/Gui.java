@@ -20,8 +20,9 @@ public class Gui extends JFrame{
     private int screenHeight=800;
     private BoidField boidField;
 
-    private final float WIDTHRATIO= 0.8F;
+    private final float WIDTHRATIO= 0.85F;
     private final float HEIGHTRATIO= 0.93F;
+
 
     private Dimension boidsFieldSize=new Dimension((int) (screenWidth*WIDTHRATIO), (int) (screenHeight*HEIGHTRATIO));
 
@@ -50,8 +51,8 @@ public class Gui extends JFrame{
 
 
 
-            // it was screenHeight*HeigthRatio before
-        SideMenu sidePanel=new SideMenu(new Dimension((int) (screenWidth*(1-WIDTHRATIO)), (int) (screenHeight)),Color.decode("#A6DFF2"), variables);
+        // it was screenHeight*HeigthRatio before
+        SideMenu sidePanel=new SideMenu(new Dimension((int) (screenWidth*(1-WIDTHRATIO)), (screenHeight)),Color.decode("#A6DFF2"), variables);
         BottomMenu bottomPanel=new BottomMenu(new Dimension((screenWidth), (int) (screenHeight*(1-HEIGHTRATIO))),Color.decode("#A6DFF2"),variables);
 
 
@@ -82,19 +83,9 @@ public class Gui extends JFrame{
                 bottomPanel.resizePanel(new Dimension((screenWidth), (int) (screenHeight*(1-HEIGHTRATIO))));
 
 
-                //have to do it dubbly because bottom panel takes about 2* as much space as it actually is suppose to
                 boidsFieldSize=new Dimension((int) (screenWidth*WIDTHRATIO), (int) (boidField.getHeight()));
                 variables.setBoidFieldSize(boidsFieldSize);
                 boidField.resizePanel(boidsFieldSize);
-
-                //for some reason the dimensions of the bottom panel are exactly 2*as big as we order them to be
-                // so not to mess around it to much time we will place a stupid 2* infront of it
-
-                //this                                                                     ↓
-
-
-
-
 
                 Logger.getInstance().log("Screen: "+screenWidth+"w "+screenHeight+"h");
                 Logger.getInstance().log("BoidsFieldSize: "+boidsFieldSize.width+"w "+boidsFieldSize.height+"h " +boidField.getHeight()+"w "+boidField.getWidth()+"h");
