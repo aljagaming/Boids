@@ -2,6 +2,7 @@ package Functions;
 
 import Boids.Boid;
 import Boids.Vector3D;
+import Executive.Variables;
 
 import java.util.ArrayList;
 
@@ -13,40 +14,44 @@ public class Functions {
     //Separation 3
     //Aligment 2
 
-    public static Vector3D theAllMightyFunction(Boid B, ArrayList<Boid> neighbourhood,int vRange,int cohesionFactor, int separationFactor, int alignmentFactor){
+    public static Vector3D theAllMightyFunction(Boid B, Variables variables){
 
+        ArrayList<Boid> neighbourhood=variables.getArrayOfBoids();
         Vector3D v=new Vector3D(0,0,0);
 
-        //System.out.println("cohision factor "+ cohesionFactor);
-        //System.out.println("separation factor "+ separationFactor);
-        //System.out.println("aligment factor "+ alignmentFactor);
+        if (variables.getVisualRange()!=0) {
+
+            if (variables.getCoherence() != 0) {
+                Vector3D cohesionVector = cohesion(B, neighbourhood, variables.getVisualRange());
+                cohesionVector.multiply((float) variables.getCoherence() / 100);
+                v.add(cohesionVector);
+            }
 
 
+            if (variables.getSeparation() != 0) {
+                Vector3D separationVector = separation(B, neighbourhood, variables.getVisualRange());
+                separationVector.multiply(variables.getSeparation());
+                v.add(separationVector);
+            }
 
-        if (cohesionFactor!=0){
-            Vector3D cohesionVector = cohesion(B, neighbourhood, vRange);
-            cohesionVector.multiply((float) cohesionFactor /100);
-            v.add(cohesionVector);
-        }else{
-            System.out.println("thing");
+
+            if (variables.getAlignment() != 0) {
+                Vector3D alignmentVector = alignment(B, neighbourhood, variables.getVisualRange());
+                alignmentVector.multiply(variables.getAlignment() * 2);
+                v.add(alignmentVector);
+            }
+
+            v.limitVector(-B.getMAX_FORCE(), B.getMAX_FORCE());
         }
 
 
-        if (separationFactor!=0){
-            Vector3D separationVector = separation(B, neighbourhood, vRange);
-            separationVector.multiply(separationFactor);
-            v.add(separationVector);
-        }
 
+        //why does addding it precisely 3 more times make it perfect for
+        v.add(border(B,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH()));
+        v.add(border(B,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH()));
+        v.add(border(B,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH()));
 
-        if (alignmentFactor!=0){
-            Vector3D alignmentVector = alignment(B, neighbourhood, vRange);
-            alignmentVector.multiply(alignmentFactor*2);
-            v.add(alignmentVector);
-        }
-
-
-        v.limitVector(-B.getMAX_FORCE(),B.getMAX_FORCE());
+        //v.limitVector(-B.getMAX_FORCE(), B.getMAX_FORCE()); ???
 
         return v;
     }
@@ -163,4 +168,66 @@ public class Functions {
 
         return avgVelocity;
     }
+
+
+
+    public static Vector3D border(Boid b,int screenWidth,int screenHeight, int screenDepth){
+        Vector3D returnV=new Vector3D(0,0,0);
+
+        float xPos=b.getPosition().getX();
+        float yPos=b.getPosition().getY();
+        float zPos=b.getPosition().getZ();
+        float course=b.getCourse();
+
+        float turnRadius=b.getTURN_RADIUS(); //200
+
+        //BUT THEY ONLY EVER NEED TO DO AT MAX A HALF TURN FOR BOTH X and Y so its turn radius/4
+        float softBound=turnRadius/4+(-50+b.getSPEED()*100);// want this to be 50 so we dont take to much space of the screen
+        //the -50+b.getSPEED()*10 is fine tuning if the speed is max (1) we will add +50 - doubling the size of the boundary
+        float maxForce=b.getMAX_FORCE();
+
+        //For X
+        if (xPos<softBound){//LEFT WALL
+            if (course < Math.PI) {
+                returnV.setX(+maxForce);
+            } else {//Math.Pi-2*Math.Pi
+                returnV.setX(-maxForce);
+            }
+
+        } else if (xPos>(screenWidth-softBound)) {//RIGHT WALL
+            if (course < Math.PI) {//0-Math.PI
+                returnV.setX(-maxForce);
+            } else {//Math.Pi-2*Math.Pi
+                returnV.setX(+maxForce);
+            }
+        }
+
+        //For Y
+        if (yPos<softBound){//CEILING
+            if (course>Math.PI*3/2 && course<Math.PI/2) {
+                returnV.setY(-maxForce);
+            } else {//Math.Pi-2*Math.Pi
+                returnV.setY(+maxForce);
+            }
+        } else if (yPos>screenHeight-softBound) {//FLOOR
+            if (course>Math.PI*3/2 && course<Math.PI/2) {
+                returnV.setY(+maxForce);
+            } else {//Math.Pi-2*Math.Pi
+                returnV.setY(-maxForce);
+            }
+        }
+
+        //For Z
+        if (zPos<0+softBound){
+            returnV.setZ(+turnRadius);
+
+        }else if(zPos>screenDepth-softBound){
+            returnV.setZ(-turnRadius);
+        }
+
+        return returnV;
+    }
+
+
+
 }

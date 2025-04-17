@@ -10,14 +10,13 @@ import java.util.Comparator;
 import java.util.concurrent.BrokenBarrierException;
 
 public class BoidField extends PanelCreator{
-    public BoidField(Dimension size, Color backgroundColor, Variables variables) {
-        super(size, backgroundColor, variables);
+    public BoidField(Variables variables, Color backgroundColor) {
+        super(variables.getBoidFieldSize(),backgroundColor, variables);
     }
 
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);  // Always call the superclass' paintComponent method first to ensure proper rendering
-
         drawBoids(g);
     }
 
@@ -31,10 +30,10 @@ public class BoidField extends PanelCreator{
 
 
         //There must be a more elegant way to coppy an array list but leave it like this for now
+        boolean trace=variables.getTracePaths();
+
+
         ArrayList<Boid> copy = new ArrayList<>(variables.getArrayOfBoids());
-
-
-
         copy.sort(new Comparator<Boid>() {
 
             //if negative that means 01 is less than o2
@@ -50,10 +49,13 @@ public class BoidField extends PanelCreator{
 
         for (Boid b: copy) {
 
+            //int first, last;
+
+            //first =(first + 1) % size;
+
             Vector3D position=b.getPosition();
             float course=b.getCourse();
             float size= position.getZ()/100+variables.getMIN_BOID_SIZE(); //replace 10 with MAX_BOID_SIZE
-
 
             //in case size goes over bounds
 
@@ -70,13 +72,78 @@ public class BoidField extends PanelCreator{
 
             float centerX = (float) (x - (size / 2) * Math.cos(course));
             float centerY = (float) (y - (size / 2) * Math.sin(course));
+            boolean inserted=false;
+            int traceLength= b.traceLength;
+            g.setColor(Color.white);
+            
+
+
+
+            if (trace){
+                //System.out.println("hello");
+                //inefficient ass all hell be aware
+
+                if (b.traceArray==null){
+                    b.traceArray=new int[traceLength][2];
+                }
+
+
+                if (b.counter==50) {
+
+                    if (b.traceArray[0] == null) { //if array is not full
+
+                        for (int i = traceLength - 1; i >= 0; i--) {
+                            if (b.traceArray[i] == null) {
+                                b.traceArray[i][0] = (int) x;
+                                b.traceArray[i][1] = (int) y;
+                                break;
+                            }
+                        }
+
+                    } else { //if it is full go by indexes and fill it
+
+                        b.traceArray[b.oldestPos][0] = (int) x;
+                        b.traceArray[b.oldestPos][1] = (int) y;
+
+                        if (b.oldestPos == 0) {
+                            b.oldestPos = traceLength;
+                        }
+                        b.oldestPos--;
+                    }
+
+                    b.counter=0;
+                }
+                b.counter++;
+
+
+                for (int i = 0; i < traceLength; i++) {
+
+                    if (i!=b.oldestPos){
+                        if (i!=traceLength-1) {
+                            g.drawLine(b.traceArray[i][0], b.traceArray[i][1], b.traceArray[i + 1][0], b.traceArray[i + 1][1]);
+                        }else{
+                            if (b.traceArray[0][0]!=0 && b.traceArray[0][1]!=0) {
+                                g.drawLine(b.traceArray[i][0], b.traceArray[i][1], b.traceArray[0][0], b.traceArray[0][1]);
+                            }
+                        }
+                    }
+                }
+
+
+
+
+            } else if (b.traceArray!=null) {
+                b.traceArray=null;
+                b.oldestPos=traceLength-1;
+                b.counter=0;
+            }
+
 
 
             // Nose of the boid (forward)
             xPoints[0] = (int) (centerX + size * Math.cos(course));
             yPoints[0] = (int) (centerY + size * Math.sin(course));
-
-
+            
             //Left wing
             xPoints[1] = (int) (centerX + wingLength * Math.cos(course - wingAngle)); // Left wing x = x + wingLength * cos(course - wingAngle)
             yPoints[1] = (int) (centerY + wingLength * Math.sin(course - wingAngle)); // Left wing y = y + wingLength * sin(course - wingAngle)
@@ -88,15 +155,6 @@ public class BoidField extends PanelCreator{
 
             g.setColor(Color.WHITE);
             g.fillPolygon(xPoints, yPoints, 3);
-
-
-            //this bellow is COOL
-            // also how do you handle
-            //but is expensive so maybe dont use it - no one cares bout GUI :(
-
-
-
-
             g.setColor(Color.BLACK);
             g.drawPolygon(xPoints, yPoints, 3);
 
@@ -110,18 +168,6 @@ public class BoidField extends PanelCreator{
             //g.drawOval((int)(x-variables.getVisualRange()/2),(int)(y-variables.getVisualRange()/2),variables.getVisualRange(), variables.getVisualRange());
 
         }
-
-
-
-
-
-        g.setColor(Color.BLACK);
-        int soft=500;
-
-        g.drawRect(soft/4,soft/4,variables.getBoidFieldSize().width-2*soft/4,variables.getBoidFieldSize().height-2*soft/4);
-
-        g.drawRect(soft/2,soft/2,variables.getBoidFieldSize().width-2*soft/2,variables.getBoidFieldSize().height-2*soft/2);
-
 
 
         //this is only important for Sequential part

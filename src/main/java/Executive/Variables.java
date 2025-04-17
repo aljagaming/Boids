@@ -14,16 +14,13 @@ public class Variables {
 
 
     private ArrayList <Boid> arrayOfBoids=new ArrayList<>(0);
-
+    private int numOfBoids=20;
+    private Dimension boidFieldSize;
+    private final int DEPTH=1000;
     private final int MAX_BOID_SIZE=20;
     private final int MIN_BOID_SIZE=10;
 
-    private int numOfBoids=20;
-    private Dimension boidFieldSize;
-
     private ExecutionStyle executionStyle;
-
-
     private Gui myGui=new Gui(this);
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -36,12 +33,12 @@ public class Variables {
 
     //----------------------------------------------------------------------------------------
     //Mandatory:
-    private int coherence = 50;
-    private int separation =50;
+    private int coherence=50;
+    private int separation=50;
     private int alignment=50;
     //----------------------------------------------------------------------------------------
     //optional:
-    private int visualRange=100;
+    private int visualRange=50;//it goes up to 200
     private int animationSpeed=50;
     private boolean tracePaths=false;
     //----------------------------------------------------------------------------------------
@@ -57,6 +54,9 @@ public class Variables {
 
     public Dimension getBoidFieldSize() {
         return boidFieldSize;
+    }
+    public int getDEPTH() {
+        return DEPTH;
     }
 
     public void setBoidFieldSize(Dimension boidFieldSize) {

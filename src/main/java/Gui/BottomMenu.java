@@ -60,7 +60,8 @@ public class BottomMenu extends PanelCreator {
                                  break;
                              case "Visual range":
 
-                                 variables.setVisualRange(2*value);
+                                 //variables.setVisualRange(2*value);
+                                 variables.setVisualRange(value);
                                  Logger.getInstance().log("Visual range: " + value);
 
                                  break;

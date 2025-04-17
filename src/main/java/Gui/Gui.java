@@ -47,7 +47,7 @@ public class Gui extends JFrame{
 
         //JPanels
         //------------------------------------------------------------------------------------------------------------------------
-        boidField=new BoidField(boidsFieldSize,Color.decode("#1A79DB"),variables);
+        boidField=new BoidField(variables,Color.decode("#1A79DB"));
 
 
 
