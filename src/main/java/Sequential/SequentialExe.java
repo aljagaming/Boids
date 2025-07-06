@@ -4,121 +4,79 @@ import Boids.Boid;
 import Boids.Vector3D;
 import Executive.ExecutionInterface;
 import Executive.Variables;
+import FPS.Clock;
 import Functions.Functions;
+import Gui.Logger;
 
-import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CountDownLatch;
 
 public class SequentialExe implements ExecutionInterface {
     Variables variables;
-    boolean secondLap = false;
-    int temp = 0;
 
+    boolean running=true;
+    //boolean secondLap = false;
     Vector3D finalAcceleration = new Vector3D(0, 0, 0);
 
     public SequentialExe(Variables variables) {
         this.variables = variables;
     }
 
+
+
     @Override
     public void start() {
 
+        Logger.getInstance().log("Sequential.exe Started!");
 
-        while (true) {
+        while (running) {
 
+            Clock.start();
+            Functions.updateNumOfBoids(variables);
 
-            //1. check if #num of boids changed
-            updateNumOfBoids();
 
             for (Boid B : variables.getArrayOfBoids()) {
 
                 finalAcceleration = Functions.theAllMightyFunction(B, variables);
                 B.addAcceleration(finalAcceleration);
-                finalAcceleration.multiply(0);//set back to zero
+
+                //COMMENTED THE BOTTOM ONE OUT
+
+                //finalAcceleration.multiply(0);//set back to zero
                 B.move(variables.getAnimationSpeed()); //how fast
 
             }
 
 
-            //this makes another thread because the JAVASWING uses Event Dispatcher Thread which draws stuff on gui
-            //but would still consider this sequential....(I mean in sequential you cant have a button afterall)
-            //however we will need a blocking statemant so while loop waits for thread to finsh - that way we kinda go back to sequential again
+            //this makes another thread because the JAVA-SWING uses Event Dispatcher Thread which draws stuff on gui
+            //but would still consider this sequential....(I mean in sequential you cant have a button after all)
+            //however we will need a blocking statement so while loop waits for thread to finish drawing - that way we kinda go back to sequential again
             variables.draw();
 
-            //this kinda returns sequentuallity becasue we have to wait for other thread
+            //this kinda returns sequentially because we have to wait for other thread
             try {
                 variables.getBarrier().await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (BrokenBarrierException e) {
+            } catch (InterruptedException | BrokenBarrierException e) {
                 throw new RuntimeException(e);
             }
 
+            Clock.end();
+
         }
+
+        //System.out.println("3 Hello I stopped");
+
+        variables.getCurrentExe().start();
+
+
     }
 
     @Override
     public void stop() {
 
+        //System.out.println("1 Hello Sequential should stop");
+        Logger.getInstance().log("Sequential.exe stopping...");
+        running=false;
+
     }
-
-
-    //------------------------------------------------------------------------------------------------------
-
-    //Maybe make a class for this latter
-
-
-    private void updateNumOfBoids() {
-        Random r = new Random();
-        int numOfBoids = variables.getNumOfBoids();
-        //restarting logic
-        if (secondLap) {
-            secondLap = false;
-            numOfBoids = temp;
-        }
-
-        if (variables.isRestarting() && !secondLap) {
-            variables.setRestarting(false);
-            temp = numOfBoids;
-            numOfBoids = 0;
-            secondLap = true;
-        }
-
-
-        if (numOfBoids > variables.getArrayOfBoids().size()) {
-            while (numOfBoids != variables.getArrayOfBoids().size()) {
-
-                int border = 10;
-
-                //add a new boid
-                //KEEP IN MIND THIS GENERATES [0-99] INCLUSIVE
-                float possibleX = r.nextInt((variables.getBoidFieldSize().width) - border);
-                float possibleY = r.nextInt((variables.getBoidFieldSize().height) - border);
-
-                if (possibleX < variables.getMAX_BOID_SIZE()) {
-                    possibleX = border;
-                }
-
-                if (possibleY < variables.getMAX_BOID_SIZE()) {
-                    possibleY = border;
-                }
-
-
-                variables.getArrayOfBoids().add(new Boid(new Vector3D(possibleX, possibleY, 1000)));
-                //depth here is 1000
-
-            }
-        } else if (numOfBoids < variables.getArrayOfBoids().size()) {
-            while (numOfBoids != variables.getArrayOfBoids().size()) {
-                //add a new boid
-                //KEEP IN MIND THIS GENERATES [0-99] INCLUSIVE
-                //variables.setNumOfBoids(variables.getNumOfBoids()-1);
-                variables.getArrayOfBoids().removeLast();
-            }
-        }
-    }
-
 
 }

@@ -5,6 +5,7 @@ import Boids.Vector3D;
 import Executive.Variables;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Functions {
 
@@ -12,11 +13,19 @@ public class Functions {
 //REMEMBER THAT THE FACTOR IS INTEGER
     //Cohesion 8
     //Separation 3
-    //Aligment 2
+    //Alignment 2
 
     public static Vector3D theAllMightyFunction(Boid B, Variables variables){
 
-        ArrayList<Boid> neighbourhood=variables.getArrayOfBoids();
+
+        //here its taking the full array this would be the not optimized version
+
+        //Original version - Fun to look how much it was optimized
+        //ArrayList<Boid> neighbourhood=variables.getArrayOfBoids();
+
+        ArrayList<Boid> neighbourhood=B.getNeighborhood();
+
+
         Vector3D v=new Vector3D(0,0,0);
 
         if (variables.getVisualRange()!=0) {
@@ -30,14 +39,14 @@ public class Functions {
 
             if (variables.getSeparation() != 0) {
                 Vector3D separationVector = separation(B, neighbourhood, variables.getVisualRange());
-                separationVector.multiply(variables.getSeparation());
+                separationVector.multiply(variables.getSeparation()*100);
                 v.add(separationVector);
             }
 
 
             if (variables.getAlignment() != 0) {
                 Vector3D alignmentVector = alignment(B, neighbourhood, variables.getVisualRange());
-                alignmentVector.multiply(variables.getAlignment() * 2);
+                alignmentVector.multiply(variables.getAlignment() * 50);
                 v.add(alignmentVector);
             }
 
@@ -57,6 +66,67 @@ public class Functions {
     }
 
 
+    public static void updateNumOfBoids(Variables variables) { //recursive
+
+
+        if (variables.isRestarting()) {
+            variables.setRestarting(false);
+
+            for (Boid b :variables.getArrayOfBoids()) {
+                b.getBox().clearBox();
+            } //clear the boxes of previous boids
+
+            variables.getArrayOfBoids().clear();
+
+            updateNumOfBoids(variables);
+            return;
+        }
+
+
+        Random r = new Random();
+        int numOfBoids = variables.getNumOfBoids();
+
+        if (numOfBoids > variables.getArrayOfBoids().size()) {
+
+            while (numOfBoids != variables.getArrayOfBoids().size()) {
+
+                int border = 10;
+
+                //add a new boid
+                //KEEP IN MIND THIS GENERATES [0-99] INCLUSIVE
+                float possibleX = r.nextInt((variables.getBoidFieldSize().width) - border);
+                float possibleY = r.nextInt((variables.getBoidFieldSize().height) - border);
+
+                if (possibleX < variables.getMAX_BOID_SIZE()) {
+                    possibleX = border;
+                }
+
+                if (possibleY < variables.getMAX_BOID_SIZE()) {
+                    possibleY = border;
+                }
+
+
+                variables.getArrayOfBoids().add(new Boid(new Vector3D(possibleX, possibleY, 1000),variables.getBoxGrid()));
+                //depth here is 1000
+
+            }
+        } else if (numOfBoids < variables.getArrayOfBoids().size()) {
+            while (numOfBoids != variables.getArrayOfBoids().size()) {
+                //add a new boid
+                //KEEP IN MIND THIS GENERATES [0-99] INCLUSIVE
+                //variables.setNumOfBoids(variables.getNumOfBoids()-1);
+                variables.getArrayOfBoids().getLast().removeMeFromMyBox();
+                variables.getArrayOfBoids().removeLast();
+
+            }
+
+        }
+
+    }
+
+
+
+
 
     //Cohesion
     //------------------------------------------------------------------------------------------------------------------------
@@ -70,7 +140,12 @@ public class Functions {
         Vector3D avgPosition=new Vector3D(0,0,0);
         int total=0;
         for (Boid b:neighbourhood) {
-            //visual range is *8 here
+
+            if (b==null){
+                //System.out.println("Shiit in cohesion");
+                continue;
+            }
+
             if (currentP.distance(b.getPosition()) < visualRange && b != parameterBoid) {
                 avgPosition.add(b.getPosition());
                 total++;
@@ -107,6 +182,10 @@ public class Functions {
 
         int total=0;
         for (Boid b:neighbourhood) {
+            if (b==null){
+                //System.out.println("Shii in separation");
+                continue;
+            }
 
             float distance = currentP.distance(b.getPosition());
 
@@ -145,6 +224,10 @@ public class Functions {
 
         int total=0;
         for (Boid b:neighbourhood) {
+            if (b==null){
+                //System.out.println("Shiit in aligment");
+                continue;
+            }
             float distance=position.distance(b.getPosition());
 
             //visual range * 2 here
@@ -212,13 +295,13 @@ public class Functions {
         } else if (yPos>screenHeight-softBound) {//FLOOR
             if (course>Math.PI*3/2 && course<Math.PI/2) {
                 returnV.setY(+maxForce);
-            } else {//Math.Pi-2*Math.Pi
+            } else {//Math.Pi-2*Mathi
                 returnV.setY(-maxForce);
             }
         }
 
         //For Z
-        if (zPos<0+softBound){
+        if (zPos<1+softBound){
             returnV.setZ(+turnRadius);
 
         }else if(zPos>screenDepth-softBound){
@@ -227,7 +310,5 @@ public class Functions {
 
         return returnV;
     }
-
-
 
 }

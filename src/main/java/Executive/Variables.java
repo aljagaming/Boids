@@ -5,6 +5,7 @@ import Distributed.DistributedExe;
 import Gui.Gui;
 import Parallel.ParallelExe;
 import Sequential.SequentialExe;
+import SpatialHashing.Grid;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -20,10 +21,13 @@ public class Variables {
     private final int MAX_BOID_SIZE=20;
     private final int MIN_BOID_SIZE=10;
 
-    private ExecutionStyle executionStyle;
     private Gui myGui=new Gui(this);
+
+    private Grid boxGrid=new Grid(this);
+
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    private ExecutionStyle executionStyleName;
     private ExecutionInterface currentExe=new SequentialExe(this);
 
     //----------------------------------------------------------------------------------------
@@ -38,7 +42,7 @@ public class Variables {
     private int alignment=50;
     //----------------------------------------------------------------------------------------
     //optional:
-    private int visualRange=50;//it goes up to 200
+    private int visualRange=50;
     private int animationSpeed=50;
     private boolean tracePaths=false;
     //----------------------------------------------------------------------------------------
@@ -115,6 +119,10 @@ public class Variables {
         return arrayOfBoids;
     }
 
+    public void setArrayOfBoids(ArrayList<Boid> arrayOfBoids) {
+        this.arrayOfBoids = arrayOfBoids;
+    }
+
     public int getMAX_BOID_SIZE() {
         return MAX_BOID_SIZE;
     }
@@ -135,36 +143,61 @@ public class Variables {
         return barrier;
     }
 
+    public Grid getBoxGrid() {
+        return boxGrid;
+    }
+
+    public ExecutionInterface getCurrentExe() {
+        return currentExe;
+    }
+
+
+
+
+
+
     public void updateExecutionStyle(ExecutionStyle newExecutionStyle){
 
-        if (newExecutionStyle!=executionStyle){
+        if (executionStyleName==null){
+            executionStyleName=ExecutionStyle.SEQUENTIAL;
+            currentExe=new SequentialExe(this);
+            currentExe.start();
+            return;
+        }
 
-            executionStyle=newExecutionStyle;
+
+
+        if (newExecutionStyle != executionStyleName){ //if its not the same as currently running one
+
+            executionStyleName = newExecutionStyle;
 
             if (currentExe!=null){
+
                 currentExe.stop();
+
             }else{
+                //executionStyleName
                 return;
             }
 
 
-            switch (executionStyle){
+            switch (executionStyleName){
                 case SEQUENTIAL:
                     currentExe=new SequentialExe(this);
-                    currentExe.start();
+                    //currentExe.start();
 
                     //Call sequential execution
 
                     break;
                 case PARALLEL:
                     currentExe=new ParallelExe(this);
-                    currentExe.start();
+                    //currentExe.start();
                     //Call parallel execution
 
                     break;
                 case DISTRIBUTED:
                     currentExe=new DistributedExe(this);
-                    currentExe.start();
+                    //currentExe.start();
                     //Call Distributed execution
 
                     break;
@@ -180,6 +213,7 @@ public class Variables {
     public void log(String str){
         myGui.guiLog(str);
     }
+
 
 
 

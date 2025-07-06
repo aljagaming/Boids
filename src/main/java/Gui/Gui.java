@@ -1,6 +1,7 @@
 package Gui;
 
 import Executive.Variables;
+import SpatialHashing.Grid;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,9 +16,12 @@ public class Gui extends JFrame{
 
     Variables variables;
 
-    private int screenWidth=1440;
 
-    private int screenHeight=800;
+    //attempt at going fullscreen
+    private int screenWidth=Toolkit.getDefaultToolkit().getScreenSize().width;
+    private int screenHeight=Toolkit.getDefaultToolkit().getScreenSize().height;
+
+
     private BoidField boidField;
 
     private final float WIDTHRATIO= 0.85F;
@@ -27,19 +31,18 @@ public class Gui extends JFrame{
     private Dimension boidsFieldSize=new Dimension((int) (screenWidth*WIDTHRATIO), (int) (screenHeight*HEIGHTRATIO));
 
 
-
-
     public Gui(Variables variables){
+
 
         this.variables = variables;
         variables.setBoidFieldSize(boidsFieldSize);
-        Logger.getInstance().log("Welcome to Boids Simulation! (by yours truly)");
+        Logger.getInstance().log("Welcome to Boids Simulation! (by yours truly) ");
 
         //JFrame
         //------------------------------------------------------------------------------------------------------------------------
 
         setTitle("Boids simulation");
-        setSize(screenWidth,screenHeight);// HELLEELLELELL
+        setSize(screenWidth,screenHeight);
         setLayout(new BorderLayout());
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -59,7 +62,6 @@ public class Gui extends JFrame{
         add(boidField,BorderLayout.WEST);
         add(sidePanel,BorderLayout.EAST);
         add(bottomPanel,BorderLayout.SOUTH);
-
 
         //------------------------------------------------------------------------------------------------------------------------
 
@@ -87,14 +89,15 @@ public class Gui extends JFrame{
                 variables.setBoidFieldSize(boidsFieldSize);
                 boidField.resizePanel(boidsFieldSize);
 
-                Logger.getInstance().log("Screen: "+screenWidth+"w "+screenHeight+"h");
-                Logger.getInstance().log("BoidsFieldSize: "+boidsFieldSize.width+"w "+boidsFieldSize.height+"h " +boidField.getHeight()+"w "+boidField.getWidth()+"h");
-                Logger.getInstance().log("BottomMenu: "+bottomPanel.getWidth()+"w "+bottomPanel.getHeight()+"h ");
 
+                //Logger.getInstance().log("Screen: "+screenWidth+"w "+screenHeight+"h");
+                //Logger.getInstance().log("BoidsFieldSize: "+boidsFieldSize.width+"w "+boidsFieldSize.height+"h " +boidField.getHeight()+"w "+boidField.getWidth()+"h");
+                //Logger.getInstance().log("BottomMenu: "+bottomPanel.getWidth()+"w "+bottomPanel.getHeight()+"h ");
+
+                //variables.setBoxGrid();
 
             }
         });
-
 
         setVisible(true);
     }

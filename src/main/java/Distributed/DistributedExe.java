@@ -20,6 +20,5 @@ public class DistributedExe implements ExecutionInterface {
 
     @Override
     public void stop() {
-
     }
 }

@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.concurrent.BrokenBarrierException;
 
 public class BoidField extends PanelCreator{
+
+    public static String fpsString="Start";
     public BoidField(Variables variables, Color backgroundColor) {
         super(variables.getBoidFieldSize(),backgroundColor, variables);
     }
@@ -80,7 +82,6 @@ public class BoidField extends PanelCreator{
 
 
             if (trace){
-                //System.out.println("hello");
                 //inefficient ass all hell be aware
 
                 if (b.traceArray==null){
@@ -158,14 +159,11 @@ public class BoidField extends PanelCreator{
             g.setColor(Color.BLACK);
             g.drawPolygon(xPoints, yPoints, 3);
 
-            //g.setColor(Color.BLACK); // Set dot color
+            g.setColor(Color.BLACK); // Set dot color
             //g.fillOval((int) (x - 4 / 2), (int) (y - 4 / 2), 4, 4);
 
 
-
-
-            //g.setColor(Color.YELLOW);
-            //g.drawOval((int)(x-variables.getVisualRange()/2),(int)(y-variables.getVisualRange()/2),variables.getVisualRange(), variables.getVisualRange());
+            g.drawString(fpsString,10,20);
 
         }
 
@@ -175,13 +173,9 @@ public class BoidField extends PanelCreator{
 
         try {
             variables.getBarrier().await(); // this is so the loop can continue back at Sequential Part
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (BrokenBarrierException e) {
+        } catch (InterruptedException | BrokenBarrierException e) {
             throw new RuntimeException(e);
         }
-
-
 
 
     }

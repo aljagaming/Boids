@@ -127,16 +127,13 @@ public class SideMenu extends PanelCreator {
 
                 switch (selectedOption) {
                     case "Sequential execution":
-                        Logger.getInstance().log("sequentialExe...");
                         newStyle = ExecutionStyle.SEQUENTIAL;
                         break;
                     case "Parallel execution":
-                        Logger.getInstance().log("ParallelExe...");
                         newStyle = ExecutionStyle.PARALLEL;
                         break;
                     case "Distributed execution":
                         newStyle = ExecutionStyle.DISTRIBUTED;
-                        Logger.getInstance().log("DistributedExe...");
                         break;
                 }
 

@@ -1,5 +1,9 @@
 package Boids;
 
+import SpatialHashing.Box;
+import SpatialHashing.Grid;
+
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -22,11 +26,23 @@ public class Boid {
     private float lastSpeed=SPEED;
     private Random r=new Random();
 
+    private ArrayList<Boid> neighbours = new ArrayList<Boid>();
+
+
+    private Box pastBox;
+    private Grid grid;
+    private Box[] boxArray;
+
+    private Box box;
 
 
 
-    public Boid(Vector3D position) {
+    public Boid(Vector3D position, Grid grid) {
         this.position = position;
+        this.grid=grid;
+        this.boxArray=grid.getBoxArray();
+        this.box= whichBox();
+
 
         //random number schanangance r.nextFloat ---> 0.0-1.0  and we need [-SPEED_LIMIT,+SPEED_LIMIT] so :
         this.velocity=new Vector3D(r.nextFloat()*2*SPEED-SPEED,r.nextFloat()*2*SPEED-SPEED,r.nextFloat()*2*SPEED-SPEED); // now at each direction max 20
@@ -64,6 +80,7 @@ public class Boid {
 
         course= (float) Math.atan2(velocity.getY(),velocity.getX());
         position.add(velocity);
+        putInABox();
         acceleration.multiply(0);
 
 
@@ -95,5 +112,87 @@ public class Boid {
     }
     public float getTURN_RADIUS() {
         return TURN_RADIUS;
+    }
+
+
+
+    public ArrayList<Boid> getNeighborhood(){
+        //this is A LOT OF COMPUTATION!!!
+        //merges all the boids from this box and surrounding boxes (all the ones that can influence this boid)
+        //rational is that each of the boxes should contain not that many boids
+        //so its still faster then checking whole array always
+        //however it benefits are mitigated if there is a lot of boids in one place
+        //for that a tree should be used - solution that is not going to be explored
+
+
+
+
+        neighbours.clear();
+        neighbours.addAll(box.getBoidsInThisBox()); //add all of the boids of this Box
+
+
+        //there was a problem here that was resolved
+        //in parallel execution .getBoidsInThis Box can be runned and then .removeBoidFromBox and then return neighbourhood
+        //creating null pointer
+
+        ArrayList<Integer> idOfSurroundingBoxes = box.getSurroundingBoxesIds();
+
+
+
+        //this now adds ALL of the surrounding boxes
+        //maybe better if each box is devided in quadrants then less boxes to check
+
+        for (Integer i : idOfSurroundingBoxes) {
+            neighbours.addAll( boxArray[i].getBoidsInThisBox() );
+        }
+
+        return neighbours;
+    }
+
+
+
+
+    public synchronized void putInABox(){
+
+        Box boxToBePlacedAt= whichBox();
+
+        if(pastBox!=boxToBePlacedAt) {
+
+            if (pastBox!=null) {
+                pastBox.removeBoidToBox(this);
+            }
+
+            boxToBePlacedAt.addBoidToBox(this);
+
+            this.box=boxToBePlacedAt;
+
+            pastBox=boxToBePlacedAt;
+        }
+    }
+
+    private Box whichBox(){
+        int x = (int) Math.floor(position.getX() / grid.boxSize)-1; //this -1 is since box POSITION go from 0 - (numberBoxesX-1)
+        int y = (int) Math.floor(position.getY() / grid.boxSize)-1; // so for example there is 20 boxes in Depth so if boid has position 970 - it will get put in 20 which would be out of bounds
+        int z = (int) Math.floor(position.getZ() / grid.boxSize)-1;
+
+
+        //since border is still not perfect (i.e. sometimes it happens that the boids clip to -1)
+        //and because the above -1
+        x=Math.max(x,0);
+        y=Math.max(y,0);
+        z=Math.max(z,0);
+
+        int index =x + y * grid.numberOfBoxesX + z * (grid.numberOfBoxesY * grid.numberOfBoxesX);
+
+
+        return boxArray[index];
+    }
+
+    public Box getBox() {
+        return box;
+    }
+
+    public void removeMeFromMyBox() {
+        box.removeBoidToBox(this);
     }
 }
