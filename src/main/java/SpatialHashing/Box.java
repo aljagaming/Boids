@@ -52,7 +52,6 @@ public class Box {
 
 
         //this gives indexes in the grid array of all the boxes that are surrounding this one in space
-
         int counter=0;
         for (int i = -1; i <=1; i++) {
             for (int j = -1; j <=1; j++) {
@@ -115,4 +114,7 @@ public class Box {
         return surroundingBoxesIds;
     }
 
+    public int[] getBoxIndex() {
+        return boxIndex;
+    }
 }

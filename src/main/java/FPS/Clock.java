@@ -13,27 +13,25 @@ public class Clock {
 
 
     public static void start(){
-        start=System.currentTimeMillis();
+        start=System.nanoTime();
     }
 
     public static void end(){
 
-        SUM = SUM + ( System.currentTimeMillis()-start );
+        long elapsed = System.nanoTime() - start;
+        SUM += elapsed;
         countAvg++;
 
-        if (countAvg >= AVGTHISMANY){
 
-            long timePassed=Math.divideExact(SUM, AVGTHISMANY);
+        if (countAvg >= AVGTHISMANY) {
+            long avgNano = SUM / AVGTHISMANY;
+            double ms = Math.round(avgNano / 1_000_000.0);
+            double fps = Math.round( 1000.0 / ms);
 
-            if (timePassed==0){
-                BoidField.fpsString=("FPS: "+ 1000 + " MS: " + 0);
-                return;
-            }
+            BoidField.fpsString = String.format("FPS: " +fps+ " MS: " + ms);
 
-            BoidField.fpsString = ("FPS: "+ (1000/timePassed) + " MS: " + timePassed);
-
-            SUM=0;
-            countAvg=0;
+            SUM = 0;
+            countAvg = 0;
         }
 
     }

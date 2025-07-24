@@ -20,8 +20,6 @@ public class Grid {
     private Box[] boxArray;
 
 
-
-
     public Grid(Variables variables) {
         this.variables = variables;
 

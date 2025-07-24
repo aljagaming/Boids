@@ -57,13 +57,14 @@ public class Boid {
         // arctang(Y/X)= alpha!
         //Math.atan(velocity.getX()/velocity.getY()); doesnt work because x y can be negative
         //ALSO IT HAS TO BE Y/X (STUPID) because tan= sin/cos and not the other way around!!!!!
-        
+
         course= (float) Math.atan2(velocity.getY(),velocity.getX());// this however needs to be updated each time velocity is updated
         acceleration = new Vector3D(0,0,0);
+
+        putInABox();
     }
 
     public void move(float speed){
-
         if (speed==0) return;
         speed=speed/100;
 
@@ -98,6 +99,17 @@ public class Boid {
     public Vector3D getPosition() {
         return new Vector3D(position.getX(), position.getY(), position.getZ());
     }
+
+    /*
+     public Vector3D getPosition(Vector3D tempVector) {
+
+        //this bellow is okay but it intializes new vector every time - slow
+        //return new Vector3D(position.getX(), position.getY(), position.getZ());
+
+        //so instead
+        return tempVector=position;
+    }
+     */
     public Vector3D getVelocity() {
         return new Vector3D(velocity.getX(), velocity.getY(), velocity.getZ());
     }

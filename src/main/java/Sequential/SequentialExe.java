@@ -45,8 +45,6 @@ public class SequentialExe implements ExecutionInterface {
                 B.move(variables.getAnimationSpeed()); //how fast
 
             }
-
-
             //this makes another thread because the JAVA-SWING uses Event Dispatcher Thread which draws stuff on gui
             //but would still consider this sequential....(I mean in sequential you cant have a button after all)
             //however we will need a blocking statement so while loop waits for thread to finish drawing - that way we kinda go back to sequential again

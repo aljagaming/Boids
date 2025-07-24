@@ -11,7 +11,7 @@ import java.util.concurrent.BrokenBarrierException;
 
 public class BoidField extends PanelCreator{
 
-    public static String fpsString="Start";
+    public static String fpsString="00";
     public BoidField(Variables variables, Color backgroundColor) {
         super(variables.getBoidFieldSize(),backgroundColor, variables);
     }

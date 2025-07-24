@@ -14,6 +14,7 @@ public class Functions {
     //Cohesion 8
     //Separation 3
     //Alignment 2
+    //public static Vector3D temp;
 
     public static Vector3D theAllMightyFunction(Boid B, Variables variables){
 

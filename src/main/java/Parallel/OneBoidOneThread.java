@@ -4,9 +4,7 @@ import Boids.Boid;
 import Boids.Vector3D;
 import Executive.Variables;
 import Functions.Functions;
-
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
 
 public class OneBoidOneThread implements Runnable{
 
@@ -15,7 +13,6 @@ public class OneBoidOneThread implements Runnable{
     CountDownLatch latch;
     Vector3D acceleration;
 
-    // Constructor to receive the boid
     public OneBoidOneThread(Boid boid, Variables variables, CountDownLatch latch) {
         this.b = boid;
         this.variables=variables;
@@ -27,7 +24,6 @@ public class OneBoidOneThread implements Runnable{
         acceleration = Functions.theAllMightyFunction(b, variables);
         b.addAcceleration(acceleration);
         b.move(variables.getAnimationSpeed());
-        //System.out.println("Thread Done-------------------------");
         latch.countDown();
     }
 }
