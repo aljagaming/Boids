@@ -18,17 +18,19 @@ public class Clock {
 
     public static void end(){
 
+
         long elapsed = System.nanoTime() - start;
         SUM += elapsed;
         countAvg++;
 
 
-        if (countAvg >= AVGTHISMANY) {
-            long avgNano = SUM / AVGTHISMANY;
-            double ms = Math.round(avgNano / 1_000_000.0);
-            double fps = Math.round( 1000.0 / ms);
 
-            BoidField.fpsString = String.format("FPS: " +fps+ " MS: " + ms);
+        if (countAvg >= AVGTHISMANY) {
+            long avg = SUM / AVGTHISMANY;
+
+            long fps =  Math.round(1000_000_000.0 / avg);
+
+            BoidField.fpsString = String.format("FPS: " +fps+ " MS: " + avg/1000_000);
 
             SUM = 0;
             countAvg = 0;

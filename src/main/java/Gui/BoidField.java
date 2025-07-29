@@ -36,6 +36,10 @@ public class BoidField extends PanelCreator{
 
 
         ArrayList<Boid> copy = new ArrayList<>(variables.getArrayOfBoids());
+
+
+        //Keep it or not...
+
         copy.sort(new Comparator<Boid>() {
 
             //if negative that means 01 is less than o2
@@ -47,6 +51,11 @@ public class BoidField extends PanelCreator{
                 return Float.compare(o1.getPosition().getZ(), o2.getPosition().getZ());
             }
         });
+
+
+
+
+
 
 
         for (Boid b: copy) {
@@ -74,7 +83,7 @@ public class BoidField extends PanelCreator{
 
             float centerX = (float) (x - (size / 2) * Math.cos(course));
             float centerY = (float) (y - (size / 2) * Math.sin(course));
-            boolean inserted=false;
+            boolean inserted = false;
             int traceLength= b.traceLength;
             g.setColor(Color.white);
             
@@ -161,12 +170,10 @@ public class BoidField extends PanelCreator{
 
             g.setColor(Color.BLACK); // Set dot color
             //g.fillOval((int) (x - 4 / 2), (int) (y - 4 / 2), 4, 4);
-
-
-            g.drawString(fpsString,10,20);
-
         }
 
+
+        g.drawString(fpsString,10,20);
 
         //this is only important for Sequential part
         //in parallel part gui will have to be its own thread - cos its slow as crap
