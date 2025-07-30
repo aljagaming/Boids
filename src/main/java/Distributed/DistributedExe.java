@@ -15,7 +15,8 @@ public class DistributedExe implements ExecutionInterface {
 
 
     @Override
-    public void start() {
+    public void start(String[] args) {
+
         /*
         MPI.Init(args);
         int rank=MPI.COMM_WORLD.Rank();
@@ -25,7 +26,6 @@ public class DistributedExe implements ExecutionInterface {
         MPI.Finalize();
 
          */
-
 
     }
 

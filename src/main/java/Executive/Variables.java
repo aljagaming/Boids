@@ -13,6 +13,7 @@ import java.util.concurrent.CyclicBarrier;
 
 public class Variables {
 
+    String[] args;
 
     private ArrayList <Boid> arrayOfBoids=new ArrayList<>(0);
     private int numOfBoids=20;
@@ -47,6 +48,12 @@ public class Variables {
     private boolean tracePaths=false;
     //----------------------------------------------------------------------------------------
 
+
+    public Variables(String[] args) {
+        this.args = args;
+    }
+
+    //----------------------------------------------------------------------------------------
 
     public int getNumOfBoids() {
         return numOfBoids;
@@ -161,7 +168,7 @@ public class Variables {
         if (executionStyleName==null){
             executionStyleName=ExecutionStyle.SEQUENTIAL;
             currentExe=new SequentialExe(this);
-            currentExe.start();
+            currentExe.start(args);
             return;
         }
 

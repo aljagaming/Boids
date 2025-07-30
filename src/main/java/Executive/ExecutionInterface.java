@@ -2,7 +2,7 @@ package Executive;
 
 public interface ExecutionInterface {
 
-    void start();
+    void start(String[] args);
     void stop();
 
 }
