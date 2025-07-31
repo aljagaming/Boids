@@ -17,14 +17,11 @@ public class DistributedExe implements ExecutionInterface {
     @Override
     public void start(String[] args) {
 
-
-        MPI.Init(args);
-        int rank=MPI.COMM_WORLD.Rank();
-        int size = MPI.COMM_WORLD.Size();
-        System.out.println("Hello from process " + rank + " out of " + size);
-        Logger.getInstance().log("Hello from process " + rank + " out of " + size);
-        MPI.Finalize();
-
+        int size=MPI.COMM_WORLD.Size();
+        int[] msg = new int[] {1};
+        for (int i = 1; i < size; i++) {
+            MPI.COMM_WORLD.Send(msg, 0, 1, MPI.INT, i, 0);
+        }
 
     }
 
