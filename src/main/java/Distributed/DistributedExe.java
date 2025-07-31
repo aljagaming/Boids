@@ -3,7 +3,7 @@ package Distributed;
 import Executive.ExecutionInterface;
 import Executive.Variables;
 import Gui.Logger;
-
+import mpi.*;
 
 public class DistributedExe implements ExecutionInterface {
 
@@ -17,7 +17,7 @@ public class DistributedExe implements ExecutionInterface {
     @Override
     public void start(String[] args) {
 
-        /*
+
         MPI.Init(args);
         int rank=MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
@@ -25,7 +25,6 @@ public class DistributedExe implements ExecutionInterface {
         Logger.getInstance().log("Hello from process " + rank + " out of " + size);
         MPI.Finalize();
 
-         */
 
     }
 

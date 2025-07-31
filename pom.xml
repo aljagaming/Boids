@@ -14,4 +14,46 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+           <groupId>mpj</groupId>
+            <artifactId>mpj</artifactId>
+            <version>0.44</version>
+           <scope>system</scope>
+          <systemPath>${project.basedir}/mpj-v0_44/lib/mpj.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>run-mpj</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>./mpj-v0_44/bin/mpjrun.sh</executable>
+                    <workingDirectory>${project.basedir}</workingDirectory>
+                    <arguments>
+                        <argument>-np</argument>
+                        <argument>4</argument>
+                        <argument>-cp</argument>
+                        <argument>target/classes</argument>
+                        <argument>org.Executive.Main</argument>
+                    </arguments>
+                    <environmentVariables>
+                        <MPJ_HOME>${project.basedir}/mpj-v0_44</MPJ_HOME>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
