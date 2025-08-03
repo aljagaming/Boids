@@ -2,6 +2,7 @@ package Distributed;
 
 import Boids.Vector3D;
 import Executive.ExecutionInterface;
+import Executive.ExecutionStyle;
 import Executive.Variables;
 import FPS.Clock;
 import Functions.Functions;
@@ -13,6 +14,7 @@ import SpatialHashing.Box;
 
 import mpi.*;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.concurrent.BrokenBarrierException;
@@ -31,8 +33,23 @@ public class DistributedExe implements ExecutionInterface {
     @Override
     public void start() {
 
+        running=true;
+        firstIteration = true;
+
+        Clock.reset();
+        Clock.start();
+
         Logger.getInstance().log("Distributed.exe started!");
         int size = MPI.COMM_WORLD.Size(); // 8
+
+        if (size>8){
+            System.out.println("Distributed can only run on up to: 8 cores");
+            JOptionPane.showMessageDialog(null, "Distributed can only run on up to: 8 cores", "NotANumError", JOptionPane.INFORMATION_MESSAGE);
+            variables.updateExecutionStyle(ExecutionStyle.SEQUENTIAL);
+            variables.getCurrentExe().start();
+            return;
+        }
+
         int numberOfProccesingChunks = size - 1; // =7
 
         //numberOfProccesingChunks=Math.max(numberOfProccesingChunks,6);
@@ -68,7 +85,6 @@ public class DistributedExe implements ExecutionInterface {
 
 
 
-        int Loops=4;
 
 
         //Data--------------------------------------------------------------------
@@ -99,7 +115,10 @@ public class DistributedExe implements ExecutionInterface {
 
             //COMMON DATA ----------------------------------------------------------------------------------------------
 
-            Clock.start();
+            if (!firstIteration){
+                Clock.start();
+            }
+
             Functions.updateNumOfBoids(variables);
 
             float[] allData=new float[variables.getNumOfBoids()*3];
@@ -144,7 +163,9 @@ public class DistributedExe implements ExecutionInterface {
 
                 boidsData = new float[totalNumberOfBoidsInChunk * 8]; //boids Data
 
-                boidsOrder.clear();
+
+
+                //boidsOrder.clear();
 
 
 
@@ -198,21 +219,6 @@ public class DistributedExe implements ExecutionInterface {
                         boidsData[currentBoidProcessing * 8 + 7] = b.getCourse();
                         currentBoidProcessing++;
 
-
-
-/*
-                        System.out.println(b.getPosition().getX());
-                        System.out.println(b.getPosition().getY());
-                        System.out.println(b.getPosition().getZ());
-
-                        System.out.println(b.getVelocity().getX());
-                        System.out.println(b.getVelocity().getY());
-                        System.out.println(b.getVelocity().getZ());
-
-                        System.out.println(boxIndex);
-                        System.out.println( b.getCourse());
-
- */
 
 
 
@@ -308,20 +314,11 @@ public class DistributedExe implements ExecutionInterface {
 
 
 
-            /*
-            System.out.println("FROM RECIEVER --------------------------------------------------------");
-            for (int i = 0; i < allData.length; i++) {
-                System.out.println("Data"+i+" "+ allData[i]);
-            }
-
-             */
-
-
-
             int totalBoids=0;
 
 
             for (int i = 0; i < variables.getNumOfBoids(); i++) {
+
 
                 Boid b=boidsOrder.get(i);
 
@@ -359,18 +356,11 @@ public class DistributedExe implements ExecutionInterface {
 
 
 
-            if (Loops==100){
-                return;
-            }else{
-                Loops--;
-            }
 
 
 
 
 
-
-            System.out.println("END OF WHILEEEE LOOOP -----------------------------------------");
         }//end while
         variables.getCurrentExe().start();
     }//end start

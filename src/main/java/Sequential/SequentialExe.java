@@ -8,6 +8,7 @@ import FPS.Clock;
 import Functions.Functions;
 import Gui.Logger;
 
+import java.util.ArrayList;
 import java.util.concurrent.BrokenBarrierException;
 
 public class SequentialExe implements ExecutionInterface {
@@ -26,11 +27,19 @@ public class SequentialExe implements ExecutionInterface {
     @Override
     public void start() {
 
+        Clock.reset();
+
+        Clock.start();
+
         Logger.getInstance().log("Sequential.exe Started!");
 
-        while (running) {
+        boolean first=true;
+        while (running ) {
 
-            Clock.start();
+            if (!first) {
+                Clock.start();
+            }
+
             Functions.updateNumOfBoids(variables);
 
 
@@ -59,6 +68,10 @@ public class SequentialExe implements ExecutionInterface {
 
             Clock.end();
 
+
+            if (first) {
+                first=false;
+            }
         }
 
         //System.out.println("3 Hello I stopped");

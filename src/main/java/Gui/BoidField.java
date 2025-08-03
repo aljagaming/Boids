@@ -39,7 +39,6 @@ public class BoidField extends PanelCreator{
 
 
         //Keep it or not...
-
         copy.sort(new Comparator<Boid>() {
 
             //if negative that means 01 is less than o2
@@ -48,7 +47,11 @@ public class BoidField extends PanelCreator{
             public int compare(Boid o1, Boid o2) {
 
                 //Float compare vs Int compare here
-                return Float.compare(o1.getPosition().getZ(), o2.getPosition().getZ());
+                int result= Float.compare(o1.getPosition().getZ(), o2.getPosition().getZ());
+                if (result==0){
+                    result= 1;
+                }
+                return result;
             }
         });
 

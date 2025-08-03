@@ -104,7 +104,7 @@ public class FunctionsMPI {
 
 
             if (b==null){
-                //System.out.println("Shiit in cohesion");
+
                 continue;
             }
 
@@ -149,7 +149,7 @@ public class FunctionsMPI {
         int total=0;
         for (BoidMPI b:neighbourhood) {
             if (b==null){
-                //System.out.println("Shii in separation");
+
                 continue;
             }
 
@@ -202,7 +202,7 @@ public class FunctionsMPI {
         int total=0;
         for (BoidMPI b:neighbourhood) {
             if (b==null){
-                //System.out.println("Shiit in aligment");
+
                 continue;
             }
             float distance=position.distance(b.getPosition());

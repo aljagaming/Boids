@@ -247,20 +247,6 @@ public class Recievers {
 
 
 
-        /*
-
-
-        for (int i = 1; i < 8; i++) {
-
-            if (MPI.COMM_WORLD.Rank()==i) {
-                System.out.println(" Sender1" +i+"-----------------------------------");
-                for (int j = 0; j < returnArr.length; j++) {
-                    System.out.println("Data " + j + " " + returnArr[j]);
-                }
-            }
-        }
-
-         */
 
 
         MPI.COMM_WORLD.Send(returnArr,0,returnArr.length,MPI.FLOAT,0,4);

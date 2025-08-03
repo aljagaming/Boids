@@ -47,7 +47,6 @@ public class Variables {
     private int animationSpeed=50;
     private boolean tracePaths=false;
     //----------------------------------------------------------------------------------------
-
     //----------------------------------------------------------------------------------------
 
     public int getNumOfBoids() {
@@ -153,11 +152,6 @@ public class Variables {
         return currentExe;
     }
 
-
-
-
-
-
     public void updateExecutionStyle(ExecutionStyle newExecutionStyle){
 
         if (executionStyleName==null){
@@ -215,6 +209,8 @@ public class Variables {
     public void log(String str){
         myGui.guiLog(str);
     }
+
+
 
 
 

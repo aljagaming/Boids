@@ -25,10 +25,16 @@ public class ParallelExe implements ExecutionInterface {
     }
 
     @Override
+
     public void start() {
         //Two/Three ways of doing this
         //Each boid is its own thread M1 Macbook Air typically can handle 25 000 software threads so should be fine
         //Boid array is split into chunks and each thread does one part
+
+
+        Clock.reset();
+        Clock.start();
+
 
         Logger.getInstance().log("Parallel.exe started!");
 
@@ -67,12 +73,14 @@ public class ParallelExe implements ExecutionInterface {
 
 
 
-
+        boolean firstExe=true;
 
 
         while(running){
 
-            Clock.start();
+            if (!firstExe){
+                Clock.start();
+            }
             Functions.updateNumOfBoids(variables);
 
 
@@ -97,6 +105,12 @@ public class ParallelExe implements ExecutionInterface {
             }
 
             Clock.end();
+
+
+            if (firstExe){
+                firstExe=false;
+            }
+
         }
 
 
