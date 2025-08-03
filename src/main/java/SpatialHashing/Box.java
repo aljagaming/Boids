@@ -12,10 +12,15 @@ public class Box {
 
 
     public int[] boxIndex;// store the x,y,z position of box in grid
+    int indexInBigArray;
     //int[] boxPosition;
     ArrayList<Boid> boidsInThisBox= new ArrayList<>();; //boids currently in this box
 
     ArrayList<Integer> surroundingBoxesIds=new ArrayList<>();
+
+    int[] surroundingBoxesIdsARRAY;
+
+
     //IF I GIVE YOU BOX INDEX YOU CAN FIND ARRAY OF ALL of its surrounding Boxes
 
     //for box at [1,1,1]:
@@ -31,7 +36,7 @@ public class Box {
 
 
 
-    public Box(int[] boxIndex,int numberOfBoxesX,int numberOfBoxesY,int numberOfBoxesZ) {
+    public Box(int[] boxIndex,int numberOfBoxesX,int numberOfBoxesY,int numberOfBoxesZ, int indexInBigArray) {
         this.boxIndex = boxIndex;
         int x=boxIndex[0];
         int y=boxIndex[1];
@@ -39,16 +44,9 @@ public class Box {
         this.numberOfBoxesX=numberOfBoxesX;
         this.numberOfBoxesY=numberOfBoxesY;
         this.numberOfBoxesZ=numberOfBoxesZ;
+        this.indexInBigArray=indexInBigArray;
         //this.boxPosition=new int[] {x*50,y*50,z*50};
 
-
-        /*
-        System.out.println("BOX------------------------------------------------------------------------");
-        System.out.println("This boxes pos: x= "+x+ " y= "+y+" z= "+z);
-        System.out.println("This box index should be: "+(x+y*numberOfBoxesX+z*numberOfBoxesX*numberOfBoxesY));
-        System.out.println("Surouding boxes pos:");
-
-         */
 
 
         //this gives indexes in the grid array of all the boxes that are surrounding this one in space
@@ -78,13 +76,9 @@ public class Box {
                     //but then each of these should be transfered to an actual position in array of all the boxes positi
                     //surroundingBoxesIds.add(new int[]{newX, newY, newZ});
 
-                    /*
-                    System.out.println("Surrounding box "+ counter +" : x= "+newX+ " y= "+newY+" z= "+newZ);
-                    System.out.println("Surrounding box "+ counter +" id: "+(newX+newY*numberOfBoxesX+newZ*numberOfBoxesX*numberOfBoxesY));
-                     */
-
                     //add the actual number of those boxes in the surrounding (grid) array
                     surroundingBoxesIds.add(newX+newY*numberOfBoxesX+newZ*numberOfBoxesX*numberOfBoxesY);
+
 
                     //newX+newY*(numberOfBoxesX-1)+newZ*(numberOfBoxesX-1)*(numberOfBoxesY-1)
                     counter++;
@@ -92,6 +86,9 @@ public class Box {
                 }
             }
         }
+
+
+        surroundingBoxesIdsARRAY=surroundingBoxesIds.stream().mapToInt(Integer::intValue).toArray();
     }
 
 
@@ -114,7 +111,15 @@ public class Box {
         return surroundingBoxesIds;
     }
 
+    public int[] getSurroundingBoxesIdsARRAY() {
+        return surroundingBoxesIdsARRAY;
+    }
+
     public int[] getBoxIndex() {
         return boxIndex;
+    }
+
+    public int getIndexInBigArray(){
+        return indexInBigArray;
     }
 }

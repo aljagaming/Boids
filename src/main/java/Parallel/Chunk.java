@@ -33,6 +33,7 @@ public class Chunk { // defined as a set of boxes
                 for (int k = 0; k < grid.numberOfBoxesZ; k++) {
                     //Z major
                     //Y second
+                    //X last
 
                     int index=i + j * grid.numberOfBoxesX + k * grid.numberOfBoxesX * grid.numberOfBoxesY;
                     boxesOfThisChunkArrayList.add(boxArray[index]);
@@ -59,4 +60,7 @@ public class Chunk { // defined as a set of boxes
         return returnArray;
     }
 
+    public Box[] getBoxesOfThisChunk() {
+        return boxesOfThisChunk;
+    }
 }

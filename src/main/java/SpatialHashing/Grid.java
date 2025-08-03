@@ -66,13 +66,14 @@ public class Grid {
                     //we need to access boxes in O(1) from this array kind of a hash function
                     //boxArray.add(new Box(new int[]{x,y,z},numberOfBoxesX,numberOfBoxesY,numberOfBoxesZ));
 
-                    boxArray[index] = new Box(new int[]{x, y, z}, numberOfBoxesX, numberOfBoxesY, numberOfBoxesZ);
+                    boxArray[index] = new Box(new int[]{x, y, z}, numberOfBoxesX, numberOfBoxesY, numberOfBoxesZ,index);
                     index++;
                     //note that here numberOfBoxes goes up to (numberOfBoxes-1)
 
                 }
             }
         }
+        System.out.println(index);
     }
 
 

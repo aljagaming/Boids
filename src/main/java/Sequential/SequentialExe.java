@@ -24,7 +24,7 @@ public class SequentialExe implements ExecutionInterface {
 
 
     @Override
-    public void start(String[] args) {
+    public void start() {
 
         Logger.getInstance().log("Sequential.exe Started!");
 
@@ -63,7 +63,8 @@ public class SequentialExe implements ExecutionInterface {
 
         //System.out.println("3 Hello I stopped");
 
-        variables.getCurrentExe().start(args);
+        variables.getCurrentExe().start();
+
 
 
     }

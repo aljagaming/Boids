@@ -25,7 +25,7 @@ public class ParallelExe implements ExecutionInterface {
     }
 
     @Override
-    public void start(String[] args) {
+    public void start() {
         //Two/Three ways of doing this
         //Each boid is its own thread M1 Macbook Air typically can handle 25 000 software threads so should be fine
         //Boid array is split into chunks and each thread does one part
@@ -49,6 +49,7 @@ public class ParallelExe implements ExecutionInterface {
         collectAllThreads=new CyclicBarrier(numberOfThreads+1);
         executor=Executors.newFixedThreadPool(numberOfThreads);
 
+
         int startX=0;
         for (int i = 0; i < numberOfThreads; i++) {
             int endX = startX + chunkSizeX;
@@ -61,14 +62,16 @@ public class ParallelExe implements ExecutionInterface {
             Runnable job=new OneChunkOneThread(chunk, variables, numberOfThreads, collectAllThreads);
             runnableArr[i]=job;
             startX=endX;
+
         }
 
 
-        int count=0;
+
+
 
 
         while(running){
-            count++;
+
             Clock.start();
             Functions.updateNumOfBoids(variables);
 
@@ -98,7 +101,7 @@ public class ParallelExe implements ExecutionInterface {
 
 
         executor.shutdown();
-        variables.getCurrentExe().start(args);
+        variables.getCurrentExe().start();
 
     }
 

@@ -9,13 +9,6 @@ import java.util.Random;
 
 public class Functions {
 
-
-//REMEMBER THAT THE FACTOR IS INTEGER
-    //Cohesion 8
-    //Separation 3
-    //Alignment 2
-    //public static Vector3D temp;
-
     public static Vector3D theAllMightyFunction(Boid B, Variables variables){
 
 
@@ -29,7 +22,9 @@ public class Functions {
 
         Vector3D v=new Vector3D(0,0,0);
 
-        if (variables.getVisualRange()!=0) {
+
+
+        if (variables.getVisualRange()!=0 && !neighbourhood.isEmpty()) {
 
             if (variables.getCoherence() != 0) {
                 Vector3D cohesionVector = cohesion(B, neighbourhood, variables.getVisualRange());
@@ -57,9 +52,14 @@ public class Functions {
 
 
         //why does addding it precisely 3 more times make it perfect for
-        v.add(border(B,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH()));
-        v.add(border(B,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH()));
-        v.add(border(B,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH()));
+        Vector3D borderVector=border(B,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH());
+        v.add(borderVector);
+        v.add(borderVector);
+        v.add(borderVector);
+
+
+        //System.out.println( " Return Vector from function: "+ v.getX()+" "+ v.getY()+" "+ v.getZ()+" ");
+
 
         //v.limitVector(-B.getMAX_FORCE(), B.getMAX_FORCE()); ???
 
@@ -186,6 +186,8 @@ public class Functions {
             if (b==null){
                 //System.out.println("Shii in separation");
                 continue;
+
+
             }
 
             float distance = currentP.distance(b.getPosition());

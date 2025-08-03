@@ -48,11 +48,6 @@ public class Variables {
     private boolean tracePaths=false;
     //----------------------------------------------------------------------------------------
 
-
-    public Variables(String[] args) {
-        this.args = args;
-    }
-
     //----------------------------------------------------------------------------------------
 
     public int getNumOfBoids() {
@@ -168,7 +163,7 @@ public class Variables {
         if (executionStyleName==null){
             executionStyleName=ExecutionStyle.SEQUENTIAL;
             currentExe=new SequentialExe(this);
-            currentExe.start(args);
+            currentExe.start();
             return;
         }
 

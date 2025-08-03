@@ -36,6 +36,7 @@ public class Boid {
     private Box box;
 
 
+    public Boid(){}
 
     public Boid(Vector3D position, Grid grid) {
         this.position = position;
@@ -166,7 +167,7 @@ public class Boid {
 
     public synchronized void putInABox(){
 
-        Box boxToBePlacedAt= whichBox();
+        Box boxToBePlacedAt=whichBox();
 
         if(pastBox!=boxToBePlacedAt) {
 
@@ -197,12 +198,19 @@ public class Boid {
         int index =x + y * grid.numberOfBoxesX + z * (grid.numberOfBoxesY * grid.numberOfBoxesX);
 
 
+
+        if (index>=grid.getBoxArray().length){
+            //in distributive it happens that some boids go out of the screen so
+
+        }
+
         return boxArray[index];
     }
 
     public Box getBox() {
         return box;
     }
+
 
     public void removeMeFromMyBox() {
         box.removeBoidToBox(this);
