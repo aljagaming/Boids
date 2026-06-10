@@ -317,20 +317,20 @@ public class DistributedExe implements ExecutionInterface {
             int totalBoids=0;
 
 
-            for (int i = 0; i < variables.getNumOfBoids(); i++) {
+            //for (int i = 0; i < variables.getNumOfBoids(); i++) {
+            for (int i = 0; i < boidsOrder.size(); i++) {
 
 
-                Boid b=boidsOrder.get(i);
+                    Boid b=boidsOrder.get(i);
 
-                Vector3D returnV = new Vector3D(allData[i*3+0], allData[i*3+1], allData[i*3+2]);
+                    Vector3D returnV = new Vector3D(allData[i*3+0], allData[i*3+1], allData[i*3+2]);
 
-                b.addAcceleration(returnV);
+                    b.addAcceleration(returnV);
 
-                b.move(variables.getAnimationSpeed());
+                    b.move(variables.getAnimationSpeed());
 
 
-                //returnV.add(Functions.border(b,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH()));
-
+                    //returnV.add(Functions.border(b,variables.getBoidFieldSize().width,variables.getBoidFieldSize().height,variables.getDEPTH()));
             }
 
 

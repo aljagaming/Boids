@@ -38,28 +38,6 @@ public class BoidField extends PanelCreator{
         ArrayList<Boid> copy = new ArrayList<>(variables.getArrayOfBoids());
 
 
-        //Keep it or not...
-        copy.sort(new Comparator<Boid>() {
-
-            //if negative that means 01 is less than o2
-            //if negative that positive 01 is bigger than o2
-            @Override
-            public int compare(Boid o1, Boid o2) {
-
-                //Float compare vs Int compare here
-                int result= Float.compare(o1.getPosition().getZ(), o2.getPosition().getZ());
-                if (result==0){
-                    result= 1;
-                }
-                return result;
-            }
-        });
-
-
-
-
-
-
 
         for (Boid b: copy) {
 
@@ -89,7 +67,7 @@ public class BoidField extends PanelCreator{
             boolean inserted = false;
             int traceLength= b.traceLength;
             g.setColor(Color.white);
-            
+
 
 
 
@@ -156,7 +134,7 @@ public class BoidField extends PanelCreator{
             // Nose of the boid (forward)
             xPoints[0] = (int) (centerX + size * Math.cos(course));
             yPoints[0] = (int) (centerY + size * Math.sin(course));
-            
+
             //Left wing
             xPoints[1] = (int) (centerX + wingLength * Math.cos(course - wingAngle)); // Left wing x = x + wingLength * cos(course - wingAngle)
             yPoints[1] = (int) (centerY + wingLength * Math.sin(course - wingAngle)); // Left wing y = y + wingLength * sin(course - wingAngle)
